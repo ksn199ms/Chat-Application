@@ -4,6 +4,9 @@ import Background from '@/assets/login2.png';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@radix-ui/react-tabs';
 import { Button } from '@/components/ui/button';
+import { toast } from 'sonner';
+import {apiClient} from '@/lib/api-client';
+import { SIGNUP_ROUTE } from '@/utils/constants';
 
 const Auth = () => {
 
@@ -11,12 +14,36 @@ const Auth = () => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
+  const validateSignup = () => {
+    if(!email || !password || !confirmPassword) {
+      toast.error("All fields are required");
+      return false;
+    }else if(password !== confirmPassword) {
+      toast.error("Passwords do not match");
+      return false;
+    }else if(password.length < 6) {
+      toast.error("Password must be at least 6 characters long");
+      return false;
+    }else if(!email.includes("@")) {
+      toast.error("Invalid email");
+      return false;
+    }else if(!email.length) {
+      toast.error("Email is required");
+      return false;
+    }
+    return true;
+  }
+
   const handleLogin = async () => {
     // Login logic
   };
 
   const handleSignup = async () => {
     // Signup logic
+    if(validateSignup()) {
+      const response = await apiClient.post(SIGNUP_ROUTE, { email, password });
+      console.log(response);
+    }
   };
 
   return (
