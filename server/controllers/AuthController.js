@@ -93,3 +93,36 @@ export const getUserinfo = async (req, res) => {
         return res.status(500).send("Something went wrong");
     }
 }
+
+export const updateProfile = async (req, res) => {
+    try {
+        const {userId} = req;
+        const {firstName, lastName, color} = req.body;
+        console.log(req.body);
+        if(!firstName || !lastName) {
+            return res.status(400).send("All fields are required");
+        }
+
+        const userData = await User.findByIdAndUpdate(userId,{
+            firstName,
+            lastName,
+            color,
+            profileSetup: true
+        },{new: true,runValidators: true});
+        if (!userData) {
+            return res.status(400).send("User does not exist");
+        }
+
+        return res.status(200).json({
+            id: userData._id,
+            email: userData.email,
+            profileSetup: userData.profileSetup,
+            firstName: userData.firstName,
+            lastName: userData.lastName,
+            image: userData.image,
+            color: userData.color
+        })
+    } catch (error) {
+       console.log(error); 
+    }
+}
