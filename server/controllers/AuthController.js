@@ -1,5 +1,6 @@
 import User from "../models/UserModel.js";
 import jwt from "jsonwebtoken"
+import bcrypt from "bcrypt";
 
 
 const maxAge = 3 * 24 * 60 * 60 * 1000;
@@ -28,6 +29,65 @@ export const signup = async (req, res) => {
             email: user.email,
             profileSetup: user.profileSetup
         } });
+    } catch (error) {
+        console.log(error);
+        return res.status(500).send("Something went wrong");
+    }
+};
+
+
+export const login = async (req, res) => {
+    try {
+        const { email, password } = req.body;
+        if (!email || !password) {
+            return res.status(400).send("All fields are required");
+        }
+        const user = await User.findOne({ email });
+        if (!user) {
+            return res.status(400).send("User does not exist");
+        }
+
+        const auth = await bcrypt.compare(password, user.password);
+        if (!auth) {
+            return res.status(400).send("Incorrect password");
+        }
+
+        res.cookie("jwt", createToken(user.email, user._id), {
+            maxAge,
+            secure:true,
+            sameSite: "none",
+        });
+
+        res.status(200).json({ user: {
+            id: user._id,
+            email: user.email,
+            profileSetup: user.profileSetup,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            image: user.image,
+            color: user.color
+        } });
+    } catch (error) {
+        
+    }
+}
+
+export const getUserinfo = async (req, res) => {
+    try {
+        const userData = await User.findById(req.userId);
+        if (!userData) {
+            return res.status(400).send("User does not exist");
+        }
+
+        return res.status(200).json( {
+            id: userData._id,
+            email: userData.email,
+            profileSetup: userData.profileSetup,
+            firstName: userData.firstName,
+            lastName: userData.lastName,
+            image: userData.image,
+            color: userData.color
+        })
     } catch (error) {
         console.log(error);
         return res.status(500).send("Something went wrong");
