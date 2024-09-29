@@ -6,13 +6,33 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@radix-ui/react-tabs';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import {apiClient} from '@/lib/api-client';
-import { SIGNUP_ROUTE } from '@/utils/constants';
+import { LOGIN_ROUTE, SIGNUP_ROUTE } from '@/utils/constants';
+import { useNavigate } from 'react-router-dom';
+import { useAppStore } from '@/store';
 
 const Auth = () => {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+
+  const {setUserInfo} = useAppStore()
+
+  const navigate = useNavigate();
+
+  const validateLogin = () => {
+    if(!email || !password) {
+      toast.error("All fields are required");
+      return false;
+    }else if(!email.includes("@")) {
+      toast.error("Invalid email");
+      return false;
+    }else if(!email.length) {
+      toast.error("Email is required");
+      return false;
+    }
+    return true;
+  }
 
   const validateSignup = () => {
     if(!email || !password || !confirmPassword) {
@@ -36,13 +56,34 @@ const Auth = () => {
 
   const handleLogin = async () => {
     // Login logic
+    if(validateLogin()) {
+      const response = await apiClient.post(LOGIN_ROUTE, { email, password },{withCredentials: true});
+      console.log(response);
+
+      if(response.data.user.id) {
+        setUserInfo(response.data.user)
+        if(response.data.user.profileSetup) {
+          toast.success("Login successful");
+          navigate('/chat')
+        }else{
+          toast.success("Login successful");
+          navigate('/profile')
+        }
+      }
+    }
   };
 
   const handleSignup = async () => {
     // Signup logic
     if(validateSignup()) {
-      const response = await apiClient.post(SIGNUP_ROUTE, { email, password });
+      const response = await apiClient.post(SIGNUP_ROUTE, { email, password },{withCredentials: true});
       console.log(response);
+
+      if(response.status === 201) {
+        setUserInfo(response.data.user)
+        toast.success("Signup successful");
+        navigate("/profile");
+      }
     }
   };
 
@@ -62,7 +103,7 @@ const Auth = () => {
 
           {/* Tabs for Login/Signup */}
           <div className='w-full'>
-            <Tabs className='w-full'>
+            <Tabs className='w-full' defaultValue='login'>
               <TabsList className='bg-transparent w-full flex border-b border-gray-300'>
                 <TabsTrigger value='login'
                   className='w-1/2 text-lg font-medium p-3 transition duration-300 text-gray-700 border-b-2 data-[state=active]:border-purple-500 data-[state=active]:text-purple-700'
@@ -101,7 +142,7 @@ const Auth = () => {
               </TabsContent>
 
               {/* Signup Form */}
-              <TabsContent value='signup' className='flex flex-col gap-5 mt-8'>
+              <TabsContent value='signup' className='flex flex-col gap-5 '>
                 <Input 
                   type="email" 
                   placeholder="Email" 
