@@ -1,6 +1,7 @@
 import User from "../models/UserModel.js";
 import jwt from "jsonwebtoken"
 import bcrypt from "bcrypt";
+import {renameSync, unlinkSync} from "fs"
 
 
 const maxAge = 3 * 24 * 60 * 60 * 1000;
@@ -125,4 +126,39 @@ export const updateProfile = async (req, res) => {
     } catch (error) {
        console.log(error); 
     }
+}
+
+export const  addProfileImage = async (req, res) => {
+    try {
+        if(!req.file) {
+            return res.status(400).send("file not found");
+        }
+
+        const date = Date.now();
+        const fileName = "uploads/profiles/" + date + req.file.originalname;
+        renameSync(req.file.path, fileName);
+
+        const updatedUser = await User.findByIdAndUpdate(
+            req.userId,
+            {image: fileName},
+            {
+                new: true,
+                runValidators: true
+            }
+        )
+        if (!updatedUser) {
+            return res.status(400).send("User does not exist");
+        }
+
+        return res.status(200).json({
+            image: updatedUser.image
+        })
+    } catch (error) {
+        console.log(error);
+        return res.status(500).send("Something went wrong");
+    }
+}
+
+export const deleteProfileImage = async (req, res) => {
+
 }
