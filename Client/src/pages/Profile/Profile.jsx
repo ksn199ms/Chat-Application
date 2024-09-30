@@ -10,7 +10,7 @@ import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { toast } from 'sonner'
 import { apiClient } from '@/lib/api-client'
-import { ADD_PROFILE_IMAGE_ROUTE, HOST, UPDATE_PROFILE_ROUTE } from '@/utils/constants'
+import { ADD_PROFILE_IMAGE_ROUTE, DELETE_PROFILE_IMAGE_ROUTE, HOST, UPDATE_PROFILE_ROUTE } from '@/utils/constants'
 
 const Profile = () => {
 
@@ -86,7 +86,16 @@ const Profile = () => {
     }
 
     const deleteImageChange = async () => {
-      setImage(null)
+      try {
+        const response = await apiClient.delete(DELETE_PROFILE_IMAGE_ROUTE, {withCredentials: true});
+        if(response.status === 200 && response.data) {
+          setUserInfo({ ...userInfo, image: null })
+          toast.success('Profile image deleted successfully')
+          setImage(null)
+        }
+      } catch (error) {
+        console.log(error);
+      }
     }
 
     return (
