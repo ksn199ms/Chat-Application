@@ -5,7 +5,8 @@ import mongoose from 'mongoose'
 import cookieParser from 'cookie-parser'
 import authRoutes from './routes/AuthRoutes.js'
 
-import path from 'path'
+
+import contactRouter from './routes/ContactRoutes.js'
 
 dotenv.config()
 
@@ -30,6 +31,7 @@ app.use(cookieParser())
 
 // Routes
 app.use('/api/auth', authRoutes)
+app.use('/api/contacts',contactRouter)
 
 
 // port setup
