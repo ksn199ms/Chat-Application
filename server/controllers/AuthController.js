@@ -69,7 +69,8 @@ export const login = async (req, res) => {
             color: user.color
         } });
     } catch (error) {
-        
+        console.log(error);
+        return res.status(500).send("Something went wrong");
     }
 }
 
@@ -175,6 +176,20 @@ export const deleteProfileImage = async (req, res) => {
         await user.save();
 
         return res.status(200).send("Profile image deleted")
+    } catch (error) {
+        console.log(error);
+        return res.status(500).send("Something went wrong");
+    }
+}
+
+export const logout = async (req, res) => {
+    try {
+        res.cookie("jwt", "", {
+            maxAge: 1,
+            secure:true,
+            sameSite: "none",
+        });
+        return res.status(200).send("Logged out successfully");
     } catch (error) {
         console.log(error);
         return res.status(500).send("Something went wrong");
