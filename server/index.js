@@ -7,6 +7,7 @@ import authRoutes from './routes/AuthRoutes.js'
 
 
 import contactRouter from './routes/ContactRoutes.js'
+import setupSocket from './socket.js'
 
 dotenv.config()
 
@@ -38,6 +39,9 @@ app.use('/api/contacts',contactRouter)
 const server = app.listen(port, () => {
     console.log(`Server listening on port ${port}`);
 });
+
+// Socket connection
+setupSocket(server);
 
 // Database connection
 mongoose.connect(databaseURL).then(() => {
