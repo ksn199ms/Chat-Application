@@ -15,10 +15,13 @@ import { apiClient } from '@/lib/api-client'
 import { HOST, SEARCH_CONTACTS_ROUTE } from '@/utils/constants'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Avatar, AvatarImage } from '@radix-ui/react-avatar'
+import { useAppStore } from '@/store'
 
 
 
 const NewDm = () => {
+
+    const {setSelectedChatType, setSelectedChatData} = useAppStore()
 
     const [openNewContactModal, setOpenNewContactModal] = useState(false)
     const [searchedContacts, setSearchedContacts] = useState([])
@@ -40,6 +43,13 @@ const NewDm = () => {
             console.log(error);
         }
     };
+
+    const selectNewContact = async (contact) => {
+        setOpenNewContactModal(false);
+        setSelectedChatType('contact');
+        setSelectedChatData(contact);
+        setSearchedContacts([]);
+    }
 
     return (
         <>
@@ -67,11 +77,14 @@ const NewDm = () => {
                     <div>
                         <Input placeholder="Search Contacts" onChange={(e) => { searchContacts(e.target.value); }} className='rounded-lg p-6 mt-5 bg-[#2c2e3b] border-none' />
                     </div>
-                    <ScrollArea className='h-[250px]' >
+                    {
+                        searchedContacts.length > 0 &&(
+                            <ScrollArea className='h-[250px]' >
                         <div className="flex flex-col gap-5">
                             {
                                 searchedContacts.map((contact) => (
-                                    <div key={contact._id} className='flex gap-3 items-center cursor-pointer'>
+                                    <div key={contact._id} className='flex gap-3 items-center cursor-pointer'
+                                        onClick={() => { selectNewContact(contact) }}>
                                         <div className='w-12 h-12 relative'>
                                             <Avatar className="w-12 h-12 rounded-full overflow-hidden">
                                                 {contact.image ? (
@@ -106,9 +119,12 @@ const NewDm = () => {
                             }
                         </div>
                     </ScrollArea>
+                        )
+                    }
+                    
                     {
                         searchedContacts.length <= 0 && (
-                            <div className='flex-1 md:bg-[#1c1d25] md:flex flex-col justify-center items-center duration-1000 transition-all '>
+                            <div className='flex-1 md:mt-0 md:flex flex-col justify-center items-center duration-1000 transition-all '>
                                 <Lottie
                                     isClickToPauseDisabled={true}
                                     height={100}
