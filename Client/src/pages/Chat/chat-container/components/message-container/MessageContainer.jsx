@@ -10,7 +10,7 @@ import { IoCloseSharp } from "react-icons/io5";
 const MessageContainer = () => {
   const scrollRef = useRef();
 
-  const { selectedChatType, selectedChatData, userInfo, selectedChatMessages, setSelectedChatMessages } =
+  const { selectedChatType, selectedChatData, userInfo, selectedChatMessages, setSelectedChatMessages , setIsDownloading , setFileDownloadProgress } =
     useAppStore();
 
     const [showImage,setShowImage] = useState(false);
@@ -48,7 +48,13 @@ const MessageContainer = () => {
   }
 
   const downloadFile = async (url) =>{
-    const response = await apiClient.get(`${HOST}/${url}`,{responseType:"blob"});
+    setIsDownloading(true)
+    setFileDownloadProgress(0)
+    const response = await apiClient.get(`${HOST}/${url}`,{responseType:"blob", onDownloadProgress : (progressEvent) => {
+      const {loaded, total} = progressEvent;
+      const percentage = Math.floor((loaded * 100) / total);
+      setFileDownloadProgress(percentage);
+    }});
     const urlBlob = URL.createObjectURL(new Blob([response.data]));
     const link = document.createElement("a");
     link.href = urlBlob;
@@ -57,6 +63,8 @@ const MessageContainer = () => {
     link.click();
     link.remove();
     window.URL.revokeObjectURL(urlBlob);
+    setIsDownloading(false)
+    setFileDownloadProgress(0)
   }
 
   const renderMessages = () => {
@@ -103,7 +111,6 @@ const MessageContainer = () => {
               ? "bg-[#8417ff]/5 text-[#8417ff]/90 border-[#8417ff]/50"
               : "bg-[#2a2b33]/5 text-white/80 border-[#ffffff]/20"
           } border inline-block p-4 rounded my-1 max-w-[50%] break-words cursor-pointer`}
-          onClick={()=>{setShowImage(true);setImageURL(message.fileUrl)}}
         >
           {checkIfImage(message.fileUrl) ? (
             <div>
@@ -111,6 +118,7 @@ const MessageContainer = () => {
               src={`${HOST}/${message.fileUrl}`}
               alt="file"
               className="w-full h-auto object-contain"
+              onClick={()=>{setShowImage(true);setImageURL(message.fileUrl)}}
             />
             </div>
           ) : (

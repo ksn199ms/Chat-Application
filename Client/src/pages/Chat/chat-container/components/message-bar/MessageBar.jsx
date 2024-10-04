@@ -10,7 +10,7 @@ import { IoSend } from 'react-icons/io5'
 import { RiEmojiStickerLine } from 'react-icons/ri'
 
 const MessageBar = () => {
-    const {selectedChatData, selectedChatType , userInfo} =useAppStore()
+    const {selectedChatData, selectedChatType , userInfo ,setIsUploading , setFileUploadProgress} =useAppStore()
 
     const socket = useSocket()
 
@@ -62,9 +62,11 @@ const MessageBar = () => {
             if(file){
                 const formData = new FormData();
                 formData.append("file",file);
-                const response = await apiClient.post(UPLOAD_FILE,formData,{withCredentials : true})
+                setIsUploading(true)
+                const response = await apiClient.post(UPLOAD_FILE,formData,{withCredentials : true,onUploadProgress : data => {setFileUploadProgress(Math.round((100 * data.loaded) / data.total))}})
 
                 if(response.status === 200 && response.data){
+                    setIsUploading(false)
                     if(selectedChatType === "contact"){
                         socket.emit("sendMessage", {
                             sender: userInfo.id,
@@ -79,6 +81,7 @@ const MessageBar = () => {
             }
             console.log({file});
         } catch (error) {
+            setIsUploading(false)
             console.log(error);
         }
     }
