@@ -9,6 +9,7 @@ import authRoutes from './routes/AuthRoutes.js'
 import contactRouter from './routes/ContactRoutes.js'
 import setupSocket from './socket.js'
 import messageRoutes from './routes/MessageRoutes.js'
+import channelRoutes from './routes/ChannelRoutes.js'
 
 dotenv.config()
 
@@ -36,6 +37,7 @@ app.use(cookieParser())
 app.use('/api/auth', authRoutes)
 app.use('/api/contacts',contactRouter)
 app.use('/api/messages', messageRoutes )
+app.use('/api/channel', channelRoutes)
 
 
 // port setup
