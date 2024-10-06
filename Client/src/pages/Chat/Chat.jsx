@@ -3,8 +3,8 @@ import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import ContactsContainer from "./contacts-container/ContactsContainer";
-import ChatContainer from "./chat-container/chatContainer";
-import EmptyChatContainer from "./empty-chat-container/emptyChatContainer";
+import ChatContainer from "./chat-container/ChatContainer";
+import EmptyChatContainer from "./empty-chat-container/EmptyChatContainer";
 
 const Chat = () => {
   const {
