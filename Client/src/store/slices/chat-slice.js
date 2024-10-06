@@ -58,4 +58,35 @@ addMessage: (message) => {
     })
     
 },
+
+addChannelInChannelList: (message) => {
+    const channels = get().channels;
+    const data = channels.find((channel) => channel._id === message.channelId)
+    const index = channels.findIndex((channel) => channel._id === message.channelId)
+
+    if(index !== -1 && index !== undefined) {
+        channels.splice(index, 1)
+        channels.unshift(data)
+    }
+},
+
+addContactsInDMContacts: (message) => {
+    const userId = get().userInfo.id;
+    const formId = message.sender._id === userId ? message.recipient._id : message.sender._id;
+
+    const formData = message.sender._id === userId ? message.recipient : message.sender;
+
+    const dmContacts = get().directMessagesContacts;
+    const data = dmContacts.find((contact) => contact._id === formId)
+    const index = dmContacts.findIndex((contact) => contact._id === formId)
+
+    if(index !== -1 && index !== undefined) {
+        dmContacts.splice(index, 1)
+        dmContacts.unshift(data)
+    }else {
+        dmContacts.unshift(formData)
+    }
+    set({directMessagesContacts: dmContacts})
+}
+
 })
