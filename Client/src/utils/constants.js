@@ -25,3 +25,4 @@ export const CHANNEL_ROUTES = "api/channel";
 
 export const CREATE_CHANNEL = `${CHANNEL_ROUTES}/create-channel`
 export const GET_USER_CHANNELS = `${CHANNEL_ROUTES}/get-user-channels`
+export const GET_CHANNEL_MESSAGES = `${CHANNEL_ROUTES}/get-channel-messages`
