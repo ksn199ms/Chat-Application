@@ -246,7 +246,7 @@ const MessageBar = () => {
     }
 
     return (
-        <div className='h-[10vh] bg-[#1c1d25] flex justify-center items-center px-4 sm:px-8 mb-6 gap-4 sm:gap-6'>
+        <div className='h-[10vh] bg-[#1c1d25] flex justify-center items-center px-4 sm:px-8 mb-6 gap-4 sm:gap-6 pb-4 sm:pb-6 md:pb-safe'>
             <div className="flex-1 flex bg-[#2a2b33] rounded-md items-center gap-3 sm:gap-5 pr-3 sm:pr-5">
                 <input type="text" className='flex-1 p-3 sm:p-5 bg-transparent rounded-md focus:border-none focus:outline-none ' placeholder='Enter Message'
                     value={message}
@@ -260,13 +260,16 @@ const MessageBar = () => {
                     <button className='text-neutral-500 focus:border-none focus:outline-none focus:text-white duration-300 transition-all ' onClick={() => setEmojiPickerOpen(true)}>
                         <RiEmojiStickerLine className='text-xl sm:text-2xl' />
                     </button>
-                    <div>
-                        <div className='absolute bottom-16 right-0' ref={emojiRef}>
+                    {emojiPickerOpen && (
+                        <div className='fixed bottom-20 right-2 sm:right-0 sm:bottom-16 z-50 bg-[#2a2b33] rounded-lg shadow-lg p-2 sm:p-4 w-[90%] sm:w-auto' ref={emojiRef}>
                             <EmojiPicker 
-                            open={emojiPickerOpen} onEmojiClick={handleAddEmoji} autoFocusSearch={false}
-                            theme='dark'/>
+                                onEmojiClick={handleAddEmoji} 
+                                autoFocusSearch={false}
+                                theme='dark'
+                                width="100%" // Responsive for mobile screens
+                            />
                         </div>
-                    </div>
+                    )}
                 </div>
             </div>
             <button className='bg-[#8417ff] rounded-md flex items-center justify-center p-3 sm:p-5 focus:border-none focus:outline-none hover:bg-[#741bda] focus:bg-[#741bda] focus:text-white duration-300 transition-all '
@@ -275,6 +278,7 @@ const MessageBar = () => {
             </button>
         </div>
     )
+    
 }
 
 export default MessageBar
