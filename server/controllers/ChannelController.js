@@ -1,6 +1,7 @@
 import User from "../models/UserModel.js";
 import Channel from "../models/ChannelModel.js";
 import mongoose from "mongoose";
+import { populate } from "dotenv";
 
 export const createChannel = async (req, res) => {
     try {
@@ -53,5 +54,30 @@ export const getUserChannels = async (req, res) => {
     } catch (error) {
        console.log(error);
        return res.status(500).send("Something went wrong");
+    }
+}
+
+export const getChannelMessages = async (req, res) => {
+    try {
+
+        const { channelId } = req.params;
+        const channel = await Channel.findById(channelId).populate({
+            path: "messages",
+            populate: {
+                path: "sender",
+                select: "firstName lastName email _id image color",
+            },
+        });
+
+        if(!channel) {
+            return res.status(404).send("Channel does not exist");
+        }
+
+        const messages = channel.messages;
+        return res.status(200).json({ messages });
+        
+    } catch (error) {
+        console.log(error);
+        return res.status(500).send("Something went wrong");
     }
 }
