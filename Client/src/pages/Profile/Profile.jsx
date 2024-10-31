@@ -131,7 +131,7 @@ const Profile = () => {
                   )}
                 </div>
               )}
-              <input type="file" className='hidden' name='profile-image' ref={fileInputRef} onChange={handleImageChange} accept=".png, .jpg, .jpeg, .webp, .gif, .svg" />
+              <input type="file" className='hidden' name='profile-image' ref={fileInputRef} onChange={handleImageChange} accept=".png, .jpg, .jpeg, .webp, .gif, .svg .heic" />
             </div>
 
             <div className="flex min-w-32 md:min-w-64 flex-col gap-5 text-white items-center justify-center">
